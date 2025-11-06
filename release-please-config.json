@@ -1,0 +1,14 @@
+{
+  "packages": {
+    "owl-api": {
+      "release-type": "node",
+      "package-name": "owl-api"
+    },
+    "lark-ui": {
+      "release-type": "node",
+      "package-name": "lark-ui"
+    }
+  },
+  "include-component-in-tag": true,
+  "tag-separator": "-"
+}
