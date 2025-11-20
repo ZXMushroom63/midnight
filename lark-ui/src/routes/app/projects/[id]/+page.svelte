@@ -155,9 +155,6 @@
               disabled
             />
           {/if}
-          {#if projectPageState.project.isLocked}
-            <Button label="REQUEST CHANGES" icon="edit" color="blue" onclick={() => goto(`/app/projects/${projectPageState.project?.projectId}/request-changes`)}/>
-          {/if}
         </div>
       {:else if projectPageState.project?.nowHackatimeProjects && projectPageState.project.nowHackatimeProjects.length > 0}
         <div class="submit-section">
