@@ -16,6 +16,15 @@ export class ProjectsService {
     private posthog: PosthogService,
   ) {}
 
+  private excludeHoursJustification<T extends { hoursJustification?: any }>(obj: T): Omit<T, 'hoursJustification'> {
+    const { hoursJustification, ...rest } = obj;
+    return rest;
+  }
+
+  private excludeHoursJustificationFromArray<T extends { hoursJustification?: any }>(arr: T[]): Omit<T, 'hoursJustification'>[] {
+    return arr.map(item => this.excludeHoursJustification(item));
+  }
+
   async createProject(createProjectDto: CreateProjectDto, userId: number) {
     const lockKey = `project-create-lock:${userId}`;
     const lockValue = randomBytes(16).toString('hex');
@@ -77,7 +86,7 @@ export class ProjectsService {
         });
       }
 
-      return project;
+      return this.excludeHoursJustification(project);
     } finally {
       await this.redis.releaseLock(lockKey, lockValue);
     }
@@ -92,7 +101,7 @@ export class ProjectsService {
       orderBy: { createdAt: 'desc' },
     });
 
-    return projects;
+    return this.excludeHoursJustificationFromArray(projects);
   }
 
   async getProject(projectId: number, userId: number) {
@@ -118,7 +127,7 @@ export class ProjectsService {
       throw new ForbiddenException('Access denied');
     }
 
-    return project;
+    return this.excludeHoursJustification(project);
   }
 
   async createSubmission(createSubmissionDto: CreateSubmissionDto, userId: number) {
@@ -321,7 +330,7 @@ export class ProjectsService {
       if (Object.keys(requestedData).length === 0) {
         return {
           message: 'No changes provided.',
-          project,
+          project: this.excludeHoursJustification(project),
         };
       }
 
@@ -332,7 +341,7 @@ export class ProjectsService {
 
       return {
         message: 'Project updated successfully.',
-        project: updatedProject,
+        project: this.excludeHoursJustification(updatedProject),
       };
     }
 
@@ -499,7 +508,7 @@ export class ProjectsService {
 
     return {
       message: 'Hackatime projects updated successfully.',
-      project: updatedProject,
+      project: this.excludeHoursJustification(updatedProject),
     };
   }
 
