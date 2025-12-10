@@ -115,6 +115,7 @@ type ReviewerStats = {
 		description: string | null;
 		imageUrl: string | null;
 		cost: number;
+		maxPerUser: number | null;
 		isActive: boolean;
 		createdAt: string;
 		updatedAt: string;
@@ -273,11 +274,12 @@ let usersLoading = $state(false);
 let metricsLoading = $state(false);
 let shopLoading = $state(false);
 
-let shopItemForm = $state<{ name: string; description: string; imageUrl: string; cost: string }>({
+let shopItemForm = $state<{ name: string; description: string; imageUrl: string; cost: string; maxPerUser: string }>({
 	name: '',
 	description: '',
 	imageUrl: '',
 	cost: '',
+	maxPerUser: '',
 });
 let editingItemId = $state<number | null>(null);
 let shopItemSaving = $state(false);
@@ -462,7 +464,7 @@ function formatCount(value: number) {
 	}
 
 	function resetItemForm() {
-		shopItemForm = { name: '', description: '', imageUrl: '', cost: '' };
+		shopItemForm = { name: '', description: '', imageUrl: '', cost: '', maxPerUser: '' };
 		editingItemId = null;
 		shopItemError = '';
 		shopItemSuccess = '';
@@ -475,6 +477,7 @@ function formatCount(value: number) {
 			description: item.description || '',
 			imageUrl: item.imageUrl || '',
 			cost: item.cost.toString(),
+			maxPerUser: item.maxPerUser?.toString() || '',
 		};
 		shopItemError = '';
 		shopItemSuccess = '';
@@ -490,6 +493,7 @@ function formatCount(value: number) {
 			description: shopItemForm.description || undefined,
 			imageUrl: shopItemForm.imageUrl || undefined,
 			cost: parseFloat(shopItemForm.cost),
+			maxPerUser: shopItemForm.maxPerUser ? parseInt(shopItemForm.maxPerUser) : null,
 		};
 
 		try {
@@ -2219,6 +2223,18 @@ function normalizeUrl(url: string | null): string | null {
 								/>
 							</div>
 							<div class="space-y-2">
+								<label class="text-sm font-medium text-gray-300" for="item-max-per-user">Max per User</label>
+								<input
+									id="item-max-per-user"
+									type="number"
+									step="1"
+									min="1"
+									class="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+									placeholder="Unlimited"
+									bind:value={shopItemForm.maxPerUser}
+								/>
+							</div>
+							<div class="space-y-2">
 								<label class="text-sm font-medium text-gray-300" for="item-image">Image URL</label>
 								<input
 									id="item-image"
@@ -2289,6 +2305,9 @@ function normalizeUrl(url: string | null): string | null {
 													{item.name}
 													{#if !item.isActive}
 														<span class="px-2 py-0.5 text-xs rounded bg-red-500/20 border border-red-400 text-red-300">Inactive</span>
+													{/if}
+													{#if item.maxPerUser}
+														<span class="px-2 py-0.5 text-xs rounded bg-orange-500/20 border border-orange-400 text-orange-300">Max {item.maxPerUser}/user</span>
 													{/if}
 													{#if item.variants && item.variants.length > 0}
 														<span class="px-2 py-0.5 text-xs rounded bg-blue-500/20 border border-blue-400 text-blue-300">{item.variants.length} variant{item.variants.length > 1 ? 's' : ''}</span>

@@ -1,4 +1,4 @@
-import { IsString, IsNumber, IsOptional, IsBoolean, MaxLength, Min } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsBoolean, IsInt, MaxLength, Min } from 'class-validator';
 
 export class UpdateItemDto {
   @IsString()
@@ -19,6 +19,11 @@ export class UpdateItemDto {
   @IsOptional()
   @Min(0)
   cost?: number;
+
+  @IsInt()
+  @IsOptional()
+  @Min(1)
+  maxPerUser?: number | null;
 
   @IsBoolean()
   @IsOptional()

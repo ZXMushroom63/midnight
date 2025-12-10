@@ -234,13 +234,17 @@ export class ShopService {
       throw new BadRequestException('This item is no longer available');
     }
 
-    if (item.itemId === 1) {
-      const existingPurchase = await this.prisma.transaction.findFirst({
-        where: { userId, itemId: 1 },
+    if (item.maxPerUser !== null && item.maxPerUser > 0) {
+      const existingPurchaseCount = await this.prisma.transaction.count({
+        where: { userId, itemId },
       });
 
-      if (existingPurchase) {
-        throw new BadRequestException('You have already purchased a Midnight ticket');
+      if (existingPurchaseCount >= item.maxPerUser) {
+        throw new BadRequestException(
+          item.maxPerUser === 1
+            ? `You have already purchased this item`
+            : `You have reached the maximum limit of ${item.maxPerUser} for this item`,
+        );
       }
     }
 
